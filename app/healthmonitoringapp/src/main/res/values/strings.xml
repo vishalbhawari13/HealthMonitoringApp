@@ -1,3 +1,18 @@
 <resources>
-    <string name="app_name">healthmonitoringapp</string>
+    <!-- Application Name -->
+    <string name="app_name">PulseGuard</string>
+
+    <!-- UI Labels -->
+    <string name="welcome_message">Welcome to PulseGuard</string>
+    <string name="start_button">Start</string>
+    <string name="paired_devices_label">Paired Bluetooth Devices</string>
+
+    <!-- Error Messages -->
+    <string name="bluetooth_not_supported">Bluetooth not supported</string>
+    <string name="bluetooth_not_enabled">Bluetooth is not enabled</string>
+    <string name="no_paired_devices">No paired devices found</string>
+
+    <!-- Permissions -->
+    <string name="permission_bluetooth_connect">Bluetooth Connect Permission</string>
+    <string name="permission_location">Location Permission</string>
 </resources>

@@ -1,4 +1,4 @@
 package com.example.healthmonitoringapp;
 
-public class InternetAccessActivity {
+public class PermissionManager {
 }

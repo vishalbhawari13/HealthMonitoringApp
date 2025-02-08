@@ -2,15 +2,12 @@
 <project version="4">
   <component name="deploymentTargetSelector">
     <selectionStates>
-      <SelectionState runConfigName="app">
-        <option name="selectionMode" value="DROPDOWN" />
-      </SelectionState>
       <SelectionState runConfigName="app.healthmonitoringapp">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-01-26T08:02:22.524250300Z">
+        <DropdownSelection timestamp="2025-01-27T14:39:40.297360100Z">
           <Target type="DEFAULT_BOOT">
             <handle>
-              <DeviceId pluginId="PhysicalDevice" identifier="serial=b0356d9c" />
+              <DeviceId pluginId="PhysicalDevice" identifier="serial=78ebbc45" />
             </handle>
           </Target>
         </DropdownSelection>

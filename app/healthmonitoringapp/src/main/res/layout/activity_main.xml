@@ -5,16 +5,41 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Paired Devices Section -->
     <TextView
         android:id="@+id/pairedDevicesText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Paired Bluetooth Devices"
         android:textSize="18sp"
+        android:textStyle="bold"
         android:layout_marginBottom="8dp" />
 
     <ListView
         android:id="@+id/pairedDevicesListView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp" />
+
+    <!-- Newly Discovered Devices Section -->
+    <TextView
+        android:id="@+id/newDevicesText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Available Bluetooth Devices"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp" />
+
+    <ListView
+        android:id="@+id/newDevicesListView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/darker_gray"
+        android:dividerHeight="1dp" />
+
 </LinearLayout>

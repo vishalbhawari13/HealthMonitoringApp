@@ -1,4 +1,4 @@
-package com.example.healthmonitoringapp;
+package com.example.healthmonitoringapp.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -6,6 +6,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.healthmonitoringapp.R;
 
 public class IntroActivity extends AppCompatActivity {
 

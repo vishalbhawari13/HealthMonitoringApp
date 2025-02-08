@@ -2,7 +2,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFEB3B">
+    android:background="#FFEB3B"
+    android:padding="16dp">
 
     <!-- Welcome Message -->
     <TextView
@@ -14,7 +15,8 @@
         android:textColor="#FF5722"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:fontFamily="sans-serif-medium" />
+        android:fontFamily="sans-serif-medium"
+        android:layout_marginBottom="32dp"/>
 
     <!-- Start Button -->
     <Button
@@ -28,5 +30,8 @@
         android:text="Start"
         android:textColor="#FFFFFF"
         android:textSize="18sp"
-        android:padding="12dp" />
+        android:padding="12dp"
+        android:contentDescription="Start the app"
+        android:focusable="true"
+        android:focusableInTouchMode="true" />
 </RelativeLayout>
