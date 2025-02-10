@@ -1,62 +1,104 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="@dimen/margin_medium"
+    android:background="@color/background_light">
 
     <!-- Search Bar -->
-    <EditText
-        android:id="@+id/searchDevice"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Search Devices"
-        android:padding="12dp"
-        android:background="@android:drawable/editbox_background"
-        android:drawableLeft="@android:drawable/ic_menu_search"
-        android:textSize="16sp"
-        android:layout_marginBottom="10dp" />
+        app:cardElevation="@dimen/card_elevation"
+        app:cardCornerRadius="@dimen/card_corner_radius"
+        app:cardBackgroundColor="@color/card_background"
+        android:layout_marginBottom="@dimen/margin_medium">
+
+        <EditText
+            android:id="@+id/searchDevice"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="🔍 Search Devices"
+            android:padding="@dimen/padding_medium"
+            android:background="@drawable/search_background"
+            android:drawableLeft="@android:drawable/ic_menu_search"
+            android:textSize="@dimen/text_medium"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_hint"/>
+    </androidx.cardview.widget.CardView>
 
     <!-- Paired Devices Section -->
-    <TextView
-        android:id="@+id/pairedDevicesText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Paired Bluetooth Devices"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/pairedDevicesRecyclerView"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scrollbars="vertical" />
+        android:layout_height="wrap_content"
+        app:cardElevation="@dimen/card_elevation"
+        app:cardCornerRadius="@dimen/card_corner_radius"
+        app:cardBackgroundColor="@color/card_background"
+        android:padding="@dimen/padding_medium"
+        android:layout_marginBottom="@dimen/margin_medium">
 
-    <!-- Divider -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/pairedDevicesText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🔗 Paired Devices"
+                android:textSize="@dimen/text_large"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="@dimen/margin_small"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/pairedDevicesRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Glow Divider -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp" />
+        android:layout_height="@dimen/divider_thickness"
+        android:background="@drawable/glow_divider"
+        android:layout_marginBottom="@dimen/margin_medium"/>
 
     <!-- Newly Discovered Devices Section -->
-    <TextView
-        android:id="@+id/newDevicesText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Available Bluetooth Devices"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="8dp" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/newDevicesRecyclerView"
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:scrollbars="vertical" />
+        android:layout_height="wrap_content"
+        app:cardElevation="@dimen/card_elevation"
+        app:cardCornerRadius="@dimen/card_corner_radius"
+        app:cardBackgroundColor="@color/card_background"
+        android:padding="@dimen/padding_medium">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/newDevicesText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📡 Available Devices"
+                android:textSize="@dimen/text_large"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:layout_marginBottom="@dimen/margin_small"/>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/newDevicesRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="vertical"/>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
 </LinearLayout>

@@ -1,12 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.healthmonitoringapp">
 
-    <!-- Ensure app is installed only on devices with Bluetooth -->
+    <!-- Ensure app is installed only on devices with Bluetooth support -->
     <uses-feature android:name="android.hardware.bluetooth" android:required="true" />
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
 
-    <!-- Bluetooth permissions (for Android 11 and below) -->
+    <!-- Bluetooth permissions for Android 11 and below (API 30 and below) -->
     <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
 
@@ -14,20 +13,22 @@
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 
-    <!-- Location permissions required for Bluetooth scanning -->
+    <!-- Required for scanning Bluetooth devices on Android 11+ -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!-- Allow the app to discover Bluetooth devices -->
+    <!-- Optional: Add background location permission if needed -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"
+        android:maxSdkVersion="30" />
+
+    <!-- Bluetooth discovery permission -->
     <queries>
         <intent>
-            <action android:name="android.bluetooth.device.action.FOUND"/>
+            <action android:name="android.bluetooth.device.action.FOUND" />
         </intent>
-        <package android:name="android" />
     </queries>
 
     <application
-        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -47,6 +48,12 @@
         <!-- Main application screen -->
         <activity
             android:name=".ui.MainActivity"
+            android:theme="@style/Theme.HealthMonitoringApp"
+            android:exported="true" />
+
+        <!-- Internet access activity -->
+        <activity
+            android:name=".ui.InternetAccessActivity"
             android:theme="@style/Theme.HealthMonitoringApp"
             android:exported="true" />
 

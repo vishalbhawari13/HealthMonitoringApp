@@ -3,20 +3,50 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="12dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
 
+    <!-- Device Name -->
     <TextView
         android:id="@+id/deviceName"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Device Name"
-        android:textSize="16sp"
-        android:textStyle="bold" />
+        android:text="@string/device_name"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:paddingBottom="4dp"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
 
+    <!-- Device Address -->
     <TextView
         android:id="@+id/deviceAddress"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Device Address"
-        android:textSize="14sp" />
+        android:text="@string/device_address"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:paddingBottom="4dp"
+        android:ellipsize="marquee"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:singleLine="true"
+        android:focusable="true"
+        android:focusableInTouchMode="true"/>
+
+    <!-- ✅ Bluetooth Signal Strength (RSSI) -->
+    <TextView
+        android:id="@+id/deviceSignalStrength"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/signal_strength"
+        android:textSize="14sp"
+        android:textColor="@android:color/holo_blue_dark"
+        android:paddingTop="4dp"
+        android:visibility="gone"/>
 </LinearLayout>
