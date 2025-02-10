@@ -11,13 +11,17 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.healthmonitoringapp.R;
 import com.example.healthmonitoringapp.model.Device;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHolder> {
     private List<Device> deviceList;
+    private OnDeviceClickListener listener;
 
-    public DevicesAdapter(List<Device> devices) {
-        this.deviceList = devices;
+    // Constructor with null safety
+    public DevicesAdapter(List<Device> devices, OnDeviceClickListener listener) {
+        this.deviceList = (devices != null) ? devices : new ArrayList<>();
+        this.listener = listener;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -27,6 +31,19 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
             super(itemView);
             nameTextView = itemView.findViewById(R.id.deviceName);
             addressTextView = itemView.findViewById(R.id.deviceAddress);
+        }
+
+        // Bind data to views
+        public void bind(Device device, OnDeviceClickListener listener) {
+            nameTextView.setText(device.getName() != null ? device.getName() : "Unknown Device");
+            addressTextView.setText(device.getAddress() != null ? device.getAddress() : "No Address");
+
+            // Handle item click event
+            itemView.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onDeviceClick(device);
+                }
+            });
         }
     }
 
@@ -40,9 +57,7 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Device device = deviceList.get(position);
-        holder.nameTextView.setText(device.getName() != null ? device.getName() : "Unknown Device");
-        holder.addressTextView.setText(device.getAddress() != null ? device.getAddress() : "No Address");
+        holder.bind(deviceList.get(position), listener);
     }
 
     @Override
@@ -50,10 +65,16 @@ public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHold
         return deviceList.size();
     }
 
-    // ✅ Method to update the device list dynamically
+    // ✅ Optimized method to update the device list dynamically
     public void updateList(List<Device> newDevices) {
+        if (newDevices == null) return; // Prevent null crash
         deviceList.clear();
         deviceList.addAll(newDevices);
-        notifyDataSetChanged();
+        notifyItemRangeChanged(0, deviceList.size()); // More efficient than notifyDataSetChanged()
+    }
+
+    // Interface for handling click events
+    public interface OnDeviceClickListener {
+        void onDeviceClick(Device device);
     }
 }

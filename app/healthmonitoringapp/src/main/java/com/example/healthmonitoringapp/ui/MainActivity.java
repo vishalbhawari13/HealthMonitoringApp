@@ -27,9 +27,9 @@ import com.example.healthmonitoringapp.adapter.DevicesAdapter;
 import com.example.healthmonitoringapp.model.Device;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private BluetoothAdapter bluetoothAdapter;
     private DevicesAdapter pairedDevicesAdapter, newDevicesAdapter;
     private List<Device> pairedDevicesList, newDevicesList, filteredDevicesList;
-    private boolean isReceiverRegistered = false; // Prevents unregister crash
+    private boolean isReceiverRegistered = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,13 +65,16 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        checkPermissionsAndInitialize();
+        setupSearchFilter();
+    }
+
+    private void checkPermissionsAndInitialize() {
         if (!hasBluetoothPermissions()) {
             requestBluetoothPermissions();
         } else {
             initializeBluetooth();
         }
-
-        setupSearchFilter();
     }
 
     private void initializeBluetooth() {
@@ -79,8 +82,13 @@ public class MainActivity extends AppCompatActivity {
         newDevicesList = new ArrayList<>();
         filteredDevicesList = new ArrayList<>();
 
-        pairedDevicesAdapter = new DevicesAdapter(pairedDevicesList);
-        newDevicesAdapter = new DevicesAdapter(newDevicesList);
+        pairedDevicesAdapter = new DevicesAdapter(pairedDevicesList, device -> {
+            Toast.makeText(this, "Clicked: " + device.getName(), Toast.LENGTH_SHORT).show();
+        });
+
+        newDevicesAdapter = new DevicesAdapter(filteredDevicesList, device -> {
+            Toast.makeText(this, "Clicked: " + device.getName(), Toast.LENGTH_SHORT).show();
+        });
 
         pairedDevicesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         newDevicesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -112,26 +120,25 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showPairedDevices() {
-        if (hasBluetoothPermissions()) {
-            try {
-                Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-                pairedDevicesList.clear();
-                if (pairedDevices != null && !pairedDevices.isEmpty()) {
-                    for (BluetoothDevice device : pairedDevices) {
-                        String deviceName = getSafeDeviceName(device);
-                        String deviceAddress = device.getAddress();
-                        pairedDevicesList.add(new Device(deviceName, deviceAddress));
-                    }
-                    pairedDevicesAdapter.notifyDataSetChanged();
-                } else {
-                    Toast.makeText(this, "No paired devices found", Toast.LENGTH_SHORT).show();
-                }
-            } catch (SecurityException e) {
-                Toast.makeText(this, "Permission required to access paired devices", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-            }
-        } else {
+        if (!hasBluetoothPermissions()) {
             requestBluetoothPermissions();
+            return;
+        }
+
+        try {
+            Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+            pairedDevicesList.clear();
+            if (pairedDevices != null && !pairedDevices.isEmpty()) {
+                for (BluetoothDevice device : pairedDevices) {
+                    pairedDevicesList.add(new Device(getSafeDeviceName(device), device.getAddress()));
+                }
+                pairedDevicesAdapter.notifyDataSetChanged();
+            } else {
+                Toast.makeText(this, "No paired devices found", Toast.LENGTH_SHORT).show();
+            }
+        } catch (SecurityException e) {
+            Toast.makeText(this, "Permission required to access paired devices", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
         }
     }
 
@@ -157,33 +164,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private String getSafeDeviceName(BluetoothDevice device) {
-        String deviceName = "Unknown Device";
         try {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-                deviceName = (device.getName() != null) ? device.getName() : "Unknown Device";
+                return (device.getName() != null) ? device.getName() : "Unknown Device";
             }
         } catch (SecurityException e) {
             e.printStackTrace();
         }
-        return deviceName;
+        return "Unknown Device";
     }
 
     private final BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+            if (BluetoothDevice.ACTION_FOUND.equals(intent.getAction())) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (device != null && hasBluetoothPermissions()) {
                     String deviceName = getSafeDeviceName(device);
                     String deviceAddress = device.getAddress();
 
-                    boolean isAlreadyPaired = pairedDevicesList.stream().anyMatch(d -> d.getAddress().equals(deviceAddress));
                     boolean isAlreadyInList = newDevicesList.stream().anyMatch(d -> d.getAddress().equals(deviceAddress));
 
-                    if (!isAlreadyPaired && !isAlreadyInList) {
+                    if (!isAlreadyInList) {
                         newDevicesList.add(new Device(deviceName, deviceAddress));
-                        newDevicesAdapter.notifyDataSetChanged();
+                        filterDevices(searchDevice.getText().toString());
                     }
                 }
             }
@@ -193,6 +197,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        stopBluetoothDiscovery();
+        unregisterReceiverSafely();
+    }
+
+    private void stopBluetoothDiscovery() {
         if (bluetoothAdapter != null && hasBluetoothPermissions()) {
             try {
                 if (bluetoothAdapter.isDiscovering()) {
@@ -202,7 +211,9 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
 
+    private void unregisterReceiverSafely() {
         if (isReceiverRegistered) {
             unregisterReceiver(bluetoothReceiver);
             isReceiverRegistered = false;
@@ -213,19 +224,19 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == BLUETOOTH_PERMISSION_REQUEST_CODE) {
-            boolean allPermissionsGranted = true;
-            for (int result : grantResults) {
-                if (result != PackageManager.PERMISSION_GRANTED) {
-                    allPermissionsGranted = false;
-                    break;
-                }
-            }
-            if (allPermissionsGranted) {
+            if (allPermissionsGranted(grantResults)) {
                 initializeBluetooth();
             } else {
                 Toast.makeText(this, "Permissions not granted. Please enable them in settings.", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private boolean allPermissionsGranted(int[] grantResults) {
+        for (int result : grantResults) {
+            if (result != PackageManager.PERMISSION_GRANTED) return false;
+        }
+        return true;
     }
 
     private void setupSearchFilter() {
@@ -235,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                newDevicesAdapter.updateList(filterDevices(s.toString()));
+                filterDevices(s.toString());
             }
 
             @Override
@@ -243,13 +254,11 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private List<Device> filterDevices(String query) {
-        List<Device> filteredList = new ArrayList<>();
-        for (Device device : newDevicesList) {
-            if (device.getName().toLowerCase().contains(query.toLowerCase())) {
-                filteredList.add(device);
-            }
-        }
-        return filteredList;
+    private void filterDevices(String query) {
+        filteredDevicesList.clear();
+        filteredDevicesList.addAll(newDevicesList.stream()
+                .filter(device -> device.getName().toLowerCase().contains(query.toLowerCase()))
+                .collect(Collectors.toList()));
+        newDevicesAdapter.notifyDataSetChanged();
     }
 }
