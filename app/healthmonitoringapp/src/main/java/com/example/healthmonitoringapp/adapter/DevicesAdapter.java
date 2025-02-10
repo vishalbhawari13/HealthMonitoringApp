@@ -1,48 +1,59 @@
 package com.example.healthmonitoringapp.adapter;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-import com.example.healthmonitoringapp.model.Device;
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.healthmonitoringapp.R;
+import com.example.healthmonitoringapp.model.Device;
 
 import java.util.List;
 
-public class DevicesAdapter extends ArrayAdapter<Device> {
+public class DevicesAdapter extends RecyclerView.Adapter<DevicesAdapter.ViewHolder> {
+    private List<Device> deviceList;
 
-    public DevicesAdapter(Context context, List<Device> devices) {
-        super(context, 0, devices);
+    public DevicesAdapter(List<Device> devices) {
+        this.deviceList = devices;
     }
 
-    private static class ViewHolder {
-        TextView nameTextView;
-        TextView addressTextView;
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView nameTextView, addressTextView;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            nameTextView = itemView.findViewById(R.id.deviceName);
+            addressTextView = itemView.findViewById(R.id.deviceAddress);
+        }
+    }
+
+    @NonNull
+    @Override
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.list_item_device, parent, false);
+        return new ViewHolder(view);
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder viewHolder;
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        Device device = deviceList.get(position);
+        holder.nameTextView.setText(device.getName() != null ? device.getName() : "Unknown Device");
+        holder.addressTextView.setText(device.getAddress() != null ? device.getAddress() : "No Address");
+    }
 
-        if (convertView == null) {
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_item_device, parent, false);
-            viewHolder = new ViewHolder();
-            viewHolder.nameTextView = convertView.findViewById(R.id.deviceName);
-            viewHolder.addressTextView = convertView.findViewById(R.id.deviceAddress);
-            convertView.setTag(viewHolder);
-        } else {
-            viewHolder = (ViewHolder) convertView.getTag();
-        }
+    @Override
+    public int getItemCount() {
+        return deviceList.size();
+    }
 
-        Device device = getItem(position);
-        if (device != null) {
-            viewHolder.nameTextView.setText(device.getName() != null ? device.getName() : "Unknown Device");
-            viewHolder.addressTextView.setText(device.getAddress() != null ? device.getAddress() : "No Address");
-        }
-
-        return convertView;
+    // ✅ Method to update the device list dynamically
+    public void updateList(List<Device> newDevices) {
+        deviceList.clear();
+        deviceList.addAll(newDevices);
+        notifyDataSetChanged();
     }
 }

@@ -10,37 +10,47 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.widget.ListView;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.healthmonitoringapp.R;
 import com.example.healthmonitoringapp.adapter.DevicesAdapter;
 import com.example.healthmonitoringapp.model.Device;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int BLUETOOTH_PERMISSION_REQUEST_CODE = 1;
-    private ListView pairedDevicesListView, newDevicesListView;
+
+    private EditText searchDevice;
+    private RecyclerView pairedDevicesRecyclerView, newDevicesRecyclerView;
     private BluetoothAdapter bluetoothAdapter;
     private DevicesAdapter pairedDevicesAdapter, newDevicesAdapter;
-    private List<Device> pairedDevicesList, newDevicesList;
+    private List<Device> pairedDevicesList, newDevicesList, filteredDevicesList;
+    private boolean isReceiverRegistered = false; // Prevents unregister crash
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        pairedDevicesListView = findViewById(R.id.pairedDevicesListView);
-        newDevicesListView = findViewById(R.id.newDevicesListView);
+        searchDevice = findViewById(R.id.searchDevice);
+        pairedDevicesRecyclerView = findViewById(R.id.pairedDevicesRecyclerView);
+        newDevicesRecyclerView = findViewById(R.id.newDevicesRecyclerView);
+
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         if (bluetoothAdapter == null) {
@@ -60,17 +70,23 @@ public class MainActivity extends AppCompatActivity {
         } else {
             initializeBluetooth();
         }
+
+        setupSearchFilter();
     }
 
     private void initializeBluetooth() {
         pairedDevicesList = new ArrayList<>();
         newDevicesList = new ArrayList<>();
+        filteredDevicesList = new ArrayList<>();
 
-        pairedDevicesAdapter = new DevicesAdapter(this, pairedDevicesList);
-        newDevicesAdapter = new DevicesAdapter(this, newDevicesList);
+        pairedDevicesAdapter = new DevicesAdapter(pairedDevicesList);
+        newDevicesAdapter = new DevicesAdapter(newDevicesList);
 
-        pairedDevicesListView.setAdapter(pairedDevicesAdapter);
-        newDevicesListView.setAdapter(newDevicesAdapter);
+        pairedDevicesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        newDevicesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        pairedDevicesRecyclerView.setAdapter(pairedDevicesAdapter);
+        newDevicesRecyclerView.setAdapter(newDevicesAdapter);
 
         showPairedDevices();
         discoverNewDevices();
@@ -99,16 +115,10 @@ public class MainActivity extends AppCompatActivity {
         if (hasBluetoothPermissions()) {
             try {
                 Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
+                pairedDevicesList.clear();
                 if (pairedDevices != null && !pairedDevices.isEmpty()) {
                     for (BluetoothDevice device : pairedDevices) {
-                        String deviceName = "Unknown Device";
-                        try {
-                            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-                                deviceName = (device.getName() != null) ? device.getName() : "Unknown Device";
-                            }
-                        } catch (SecurityException e) {
-                            e.printStackTrace();
-                        }
+                        String deviceName = getSafeDeviceName(device);
                         String deviceAddress = device.getAddress();
                         pairedDevicesList.add(new Device(deviceName, deviceAddress));
                     }
@@ -133,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
 
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(bluetoothReceiver, filter);
+        isReceiverRegistered = true;
 
         try {
             if (bluetoothAdapter.isDiscovering()) {
@@ -145,6 +156,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private String getSafeDeviceName(BluetoothDevice device) {
+        String deviceName = "Unknown Device";
+        try {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
+                deviceName = (device.getName() != null) ? device.getName() : "Unknown Device";
+            }
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
+        return deviceName;
+    }
+
     private final BroadcastReceiver bluetoothReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -152,33 +175,11 @@ public class MainActivity extends AppCompatActivity {
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 if (device != null && hasBluetoothPermissions()) {
-                    String deviceName = "Unknown Device";
-
-                    try {
-                        if (ContextCompat.checkSelfPermission(context, Manifest.permission.BLUETOOTH_CONNECT) == PackageManager.PERMISSION_GRANTED) {
-                            deviceName = (device.getName() != null) ? device.getName() : "Unknown Device";
-                        }
-                    } catch (SecurityException e) {
-                        e.printStackTrace();
-                    }
-
+                    String deviceName = getSafeDeviceName(device);
                     String deviceAddress = device.getAddress();
 
-                    boolean isAlreadyPaired = false;
-                    for (Device pairedDevice : pairedDevicesList) {
-                        if (pairedDevice.getAddress().equals(deviceAddress)) {
-                            isAlreadyPaired = true;
-                            break;
-                        }
-                    }
-
-                    boolean isAlreadyInList = false;
-                    for (Device newDevice : newDevicesList) {
-                        if (newDevice.getAddress().equals(deviceAddress)) {
-                            isAlreadyInList = true;
-                            break;
-                        }
-                    }
+                    boolean isAlreadyPaired = pairedDevicesList.stream().anyMatch(d -> d.getAddress().equals(deviceAddress));
+                    boolean isAlreadyInList = newDevicesList.stream().anyMatch(d -> d.getAddress().equals(deviceAddress));
 
                     if (!isAlreadyPaired && !isAlreadyInList) {
                         newDevicesList.add(new Device(deviceName, deviceAddress));
@@ -201,7 +202,11 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-        unregisterReceiver(bluetoothReceiver);
+
+        if (isReceiverRegistered) {
+            unregisterReceiver(bluetoothReceiver);
+            isReceiverRegistered = false;
+        }
     }
 
     @Override
@@ -221,5 +226,30 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Permissions not granted. Please enable them in settings.", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void setupSearchFilter() {
+        searchDevice.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                newDevicesAdapter.updateList(filterDevices(s.toString()));
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+    }
+
+    private List<Device> filterDevices(String query) {
+        List<Device> filteredList = new ArrayList<>();
+        for (Device device : newDevicesList) {
+            if (device.getName().toLowerCase().contains(query.toLowerCase())) {
+                filteredList.add(device);
+            }
+        }
+        return filteredList;
     }
 }

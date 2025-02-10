@@ -5,6 +5,18 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <!-- Search Bar -->
+    <EditText
+        android:id="@+id/searchDevice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Search Devices"
+        android:padding="12dp"
+        android:background="@android:drawable/editbox_background"
+        android:drawableLeft="@android:drawable/ic_menu_search"
+        android:textSize="16sp"
+        android:layout_marginBottom="10dp" />
+
     <!-- Paired Devices Section -->
     <TextView
         android:id="@+id/pairedDevicesText"
@@ -15,13 +27,20 @@
         android:textStyle="bold"
         android:layout_marginBottom="8dp" />
 
-    <ListView
-        android:id="@+id/pairedDevicesListView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/pairedDevicesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp" />
+        android:scrollbars="vertical" />
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp" />
 
     <!-- Newly Discovered Devices Section -->
     <TextView
@@ -31,15 +50,13 @@
         android:text="Available Bluetooth Devices"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_marginTop="16dp"
         android:layout_marginBottom="8dp" />
 
-    <ListView
-        android:id="@+id/newDevicesListView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/newDevicesRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="1dp" />
+        android:scrollbars="vertical" />
 
 </LinearLayout>
