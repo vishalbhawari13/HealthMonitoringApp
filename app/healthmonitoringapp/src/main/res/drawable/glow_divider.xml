@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Gradient for glow effect -->
+    <gradient
+        android:startColor="@color/neon_blue"
+        android:endColor="@color/neon_purple"
+        android:angle="90" />
+
+    <!-- Set height for the shape -->
+    <size android:height="4dp" />
+
+</shape>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Exclude app data from backup (if needed) -->
+    <exclude domain="sharedpref" path="preferences.xml" />
+    <exclude domain="database" path="example_db.db" />
+</full-backup-content>

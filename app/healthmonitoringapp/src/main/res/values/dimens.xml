@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 🌟 Margins & Paddings -->
+    <dimen name="margin_medium">16dp</dimen>
+    <dimen name="margin_small">8dp</dimen>
+    <dimen name="padding_medium">12dp</dimen>
+
+    <!-- 🌟 CardView Styling -->
+    <dimen name="card_elevation">4dp</dimen>
+    <dimen name="card_corner_radius">12dp</dimen>
+
+    <!-- 🌟 Text Sizes -->
+    <dimen name="text_medium">16sp</dimen>
+    <dimen name="text_large">18sp</dimen>
+
+    <!-- 🌟 Divider Thickness -->
+    <dimen name="divider_thickness">2dp</dimen>
+
+    <!-- 🌟 Search Bar & Button Styling -->
+    <dimen name="search_bar_radius">16dp</dimen>
+    <dimen name="search_bar_stroke_width">2dp</dimen>
+    <dimen name="search_bar_height">50dp</dimen>
+
+</resources>
