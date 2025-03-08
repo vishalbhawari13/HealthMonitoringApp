@@ -52,6 +52,16 @@
         android:textStyle="bold"
         android:layout_marginBottom="8dp" />
 
+    <!-- Scanning Progress Bar -->
+    <ProgressBar
+        android:id="@+id/scanningProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_marginBottom="10dp"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/newDevicesRecyclerView"
         android:layout_width="match_parent"

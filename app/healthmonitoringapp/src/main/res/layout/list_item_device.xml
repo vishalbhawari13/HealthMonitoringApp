@@ -3,20 +3,37 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="12dp"
+    android:background="?android:attr/selectableItemBackground"
+    android:gravity="center_vertical">
 
+    <!-- ✅ Device Name -->
     <TextView
         android:id="@+id/deviceName"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Device Name"
         android:textSize="16sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:paddingBottom="4dp"/>
 
+    <!-- ✅ Device Address -->
     <TextView
         android:id="@+id/deviceAddress"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Device Address"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:paddingBottom="8dp"/>
+
+    <!-- ✅ ProgressBar Centered -->
+    <ProgressBar
+        android:id="@+id/loadingIndicator"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:visibility="gone"
+        android:layout_gravity="center_horizontal"
+        style="?android:attr/progressBarStyleLarge"/>
 </LinearLayout>

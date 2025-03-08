@@ -6,19 +6,23 @@
     <uses-feature android:name="android.hardware.bluetooth" android:required="true" />
     <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
 
-    <!-- Bluetooth permissions (for Android 11 and below) -->
+    <!-- Bluetooth permissions for Android 11 and below (API 30 and lower) -->
     <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
 
     <!-- Bluetooth permissions for Android 12+ (API 31 and above) -->
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
 
     <!-- Location permissions required for Bluetooth scanning -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!-- Allow the app to discover Bluetooth devices -->
+    <!-- Battery optimization permission (Now correctly placed under `<manifest>`) -->
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+
+    <!-- Allows the app to discover Bluetooth devices -->
     <queries>
         <intent>
             <action android:name="android.bluetooth.device.action.FOUND"/>
@@ -31,7 +35,15 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        android:requestLegacyExternalStorage="true"
         android:theme="@style/Theme.HealthMonitoringApp">
+
+        <!-- Define the Bluetooth background service -->
+        <service
+            android:name=".services.BluetoothService"
+            android:enabled="true"
+            android:exported="false" />
 
         <!-- Splash/Intro screen (Launcher activity) -->
         <activity
